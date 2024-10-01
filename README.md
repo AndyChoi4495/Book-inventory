@@ -36,15 +36,15 @@ This system is built with a **Node.js** and **Express** backend, a **PostgreSQL*
 
 ### Create the Inventory table
 
--   CREATE TABLE IF NOT EXISTS "Inventory" (
--   entry_id SERIAL PRIMARY KEY,
--   title VARCHAR(255) NOT NULL,
--   author VARCHAR(255) NOT NULL,
--   genre VARCHAR(100) NOT NULL,
--   publication_date DATE NOT NULL,
--   isbn VARCHAR(20) NOT NULL UNIQUE,
--   CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
--   );
+CREATE TABLE IF NOT EXISTS "Inventory" (  
+entry_id SERIAL PRIMARY KEY,  
+title VARCHAR(255) NOT NULL,  
+author VARCHAR(255) NOT NULL,  
+genre VARCHAR(100) NOT NULL,  
+publication_date DATE NOT NULL,  
+isbn VARCHAR(20) NOT NULL UNIQUE,  
+CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')  
+);
 
 ## .ENV File
 
