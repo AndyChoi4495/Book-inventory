@@ -32,7 +32,7 @@ This system is built with a **Node.js** and **Express** backend, a **PostgreSQL*
 -   **Axios** (HTTP Client)
 -   **Bootstrap** & **React Bootstrap** (UI Styling)
 
-## inventory.sql
+## Inventory.sql
 
 ### Create the Inventory table
 
@@ -57,12 +57,12 @@ This system is built with a **Node.js** and **Express** backend, a **PostgreSQL*
 
 ## Setting up the Front-end
 
--   cd book-inventory/book-inventory-frontend
+-   cd Book-inventory/book-frontend
 -   npm i
 -   npm start
 
 ## Setting up the Back-end
 
--   cd book-inventory/book-inventory-backend
+-   cd Book-inventory/book-backend
 -   npm i
 -   npm run dev or npm start
