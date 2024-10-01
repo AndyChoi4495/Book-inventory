@@ -52,7 +52,7 @@ CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
 -   DB_HOST=localhost
 -   DB_USER=postgres
 -   DB_PASSWORD=your_password
--   DB_NAME=your_database_name
+-   DB_NAME=your_database_name (default = postgres)
 -   DB_PORT=5432
 
 ## Setting up the Front-end
