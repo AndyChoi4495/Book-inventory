@@ -57,12 +57,12 @@ CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
 
 ## Setting up the Front-end
 
--   cd Book-inventory/book-frontend
+-   cd Book-inventory/Book-frontend
 -   npm i
 -   npm start
 
 ## Setting up the Back-end
 
--   cd Book-inventory/book-backend
+-   cd Book-inventory/Book-backend
 -   npm i
 -   npm run dev or npm start
