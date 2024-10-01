@@ -1,70 +1,68 @@
-# Getting Started with Create React App
+# Book Inventory System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Project Overview
 
-## Available Scripts
+The **Book Inventory System** is a full-stack application designed to manage a collection of books efficiently. It allows users to:
 
-In the project directory, you can run:
+-   **Add New Books:** Input detailed information about books into the inventory.
+-   **View Books:** Display a comprehensive list of all books with their details.
+-   **Filter Books:** Search and filter books based on title, author, genre, or publication date.
+-   **Export Data:** Download the inventory data in both CSV and JSON formats for offline access or reporting.
 
-### `npm start`
+This system is built with a **Node.js** and **Express** backend, a **PostgreSQL** database, and a **React** frontend, ensuring scalability, performance, and a user-friendly interface.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Technology Stack
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend
 
-### `npm test`
+-   **Node.js** (v14.x or higher)
+-   **Express.js**
+-   **Sequelize** (ORM)
+-   **PostgreSQL** (Database)
+-   **dotenv** (Environment Variables)
+-   **cors** (Cross-Origin Resource Sharing)
+-   **morgan** (HTTP Request Logger)
+-   **express-validator** (Input Validation)
+-   **json2csv** (Data Export)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Frontend
 
-### `npm run build`
+-   **React**
+-   **React Router DOM**
+-   **Axios** (HTTP Client)
+-   **Bootstrap** & **React Bootstrap** (UI Styling)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## inventory.sql
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Create the Inventory table
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+-   CREATE TABLE IF NOT EXISTS "Inventory" (
+-   entry_id SERIAL PRIMARY KEY,
+-   title VARCHAR(255) NOT NULL,
+-   author VARCHAR(255) NOT NULL,
+-   genre VARCHAR(100) NOT NULL,
+-   publication_date DATE NOT NULL,
+-   isbn VARCHAR(20) NOT NULL UNIQUE,
+-   CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
+-   );
 
-### `npm run eject`
+## .ENV File
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+-   PORT=5000
+-   DB_HOST=localhost
+-   DB_USER=postgres
+-   DB_PASSWORD=your_password
+-   DB_NAME=your_database_name
+-   DB_PORT=5432
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Setting up the Front-end
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+-   cd book-inventory/book-inventory-frontend
+-   npm i
+-   npm start
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Setting up the Back-end
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+-   cd book-inventory/book-inventory-backend
+-   npm i
+-   npm run dev or npm start
