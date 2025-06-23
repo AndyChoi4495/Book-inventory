@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://book-inventory-go7b.onrender.com/5000',
+    baseURL: 'https://book-inventory-go7b.onrender.com',
     headers: {
         'Content-Type': 'application/json',
     },
