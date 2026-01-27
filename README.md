@@ -49,11 +49,7 @@ CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
 ## .ENV File
 
 -   PORT=5000
--   DB_HOST=localhost
--   DB_USER=postgres
--   DB_PASSWORD=your_password
--   DB_NAME=your_database_name (default = postgres)
--   DB_PORT=5432
+-   DATABASE_URL=Your Database URL
 
 ## Setting up the Front-end
 
