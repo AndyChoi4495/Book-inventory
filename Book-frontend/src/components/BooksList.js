@@ -41,7 +41,7 @@ function BooksList() {
   useEffect(() => {
     fetchBooks();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fetchBooks]);
+  }, []);
 
   const handleFilter = (isReset = false) => {
     fetchBooks(isReset);
