@@ -30,7 +30,7 @@ function BooksList() {
       }
 
       const response = await api.get('/api/books', { params });
-      setBooks(response.data.books);
+      setBooks(response.data.books || []);
     } catch (err) {
       setError('Failed to fetch books. Please try again later.');
       console.error(err);
@@ -64,7 +64,7 @@ function BooksList() {
         </div>
       ) : error ? (
         <p className="text-danger">{error}</p>
-      ) : books.length > 0 ? (
+      ) : books && books.length > 0 ? (
         <Table striped bordered hover responsive>
           <thead className="table-dark">
             <tr>
