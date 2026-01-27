@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://book-inventory-go7b.onrender.com',
-    headers: {
-        'Content-Type': 'application/json',
-    },
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5009',
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 export default api;
