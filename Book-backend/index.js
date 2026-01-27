@@ -22,7 +22,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'http://localhost:3001',
-      'https://', // 배포된 프론트엔드 주소
+      'https://book-inventory-frontend-plum.vercel.app', // 배포된 프론트엔드 주소
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
