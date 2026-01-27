@@ -168,15 +168,19 @@ app.get('/api/books/export', async (req, res) => {
 // Sync Database and Start Server
 const PORT = process.env.PORT || 5000;
 
-sequelize
-  .authenticate()
-  .then(() => {
-    console.log('Database connected...');
-    return sequelize.sync();
-  })
-  .then(() => {
-    app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('Unable to connect to the database:', err);
-  });
+if (process.env.NODE_ENV !== 'production') {
+  sequelize
+    .authenticate()
+    .then(() => {
+      console.log('Database connected...');
+      return sequelize.sync();
+    })
+    .then(() => {
+      app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+    })
+    .catch((err) => {
+      console.error('Unable to connect to the database:', err);
+    });
+}
+
+module.exports = app;
