@@ -1,6 +1,7 @@
 // models/inventory.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const { ISBN_REGEX } = require('../utils/validation');
 
 const Inventory = sequelize.define(
   'Inventory',
@@ -31,13 +32,13 @@ const Inventory = sequelize.define(
       allowNull: false,
       unique: true,
       validate: {
-        is: /^(97(8|9))?\d{9}(\d|X)$/i, // Basic ISBN-10 or ISBN-13 validation
+        is: ISBN_REGEX, // utils/validation.js의 단일 출처 정규식
       },
     },
   },
   {
     tableName: 'Inventory',
-    timestamps: false, // Disable createdAt and updatedAt
+    timestamps: true, // createdAt/updatedAt (마이그레이션으로 컬럼 추가됨)
   }
 );
 

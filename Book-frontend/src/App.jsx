@@ -17,6 +17,7 @@ function App() {
                         <Route path="/" element={<Navigate to="/books" />} />
                         <Route path="/books" element={<BooksList />} />
                         <Route path="/add" element={<AddBookForm />} />
+                        <Route path="/edit/:id" element={<AddBookForm />} />
                     </Routes>
                 </div>
             </Router>

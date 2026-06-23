@@ -32,9 +32,18 @@ This system is built with a **Node.js** and **Express** backend, a **PostgreSQL*
 -   **Axios** (HTTP Client)
 -   **Bootstrap** & **React Bootstrap** (UI Styling)
 
-## Inventory.sql
+## Database schema (migrations)
 
-### Create the Inventory table
+The schema is managed by **sequelize-cli migrations** (`Book-backend/migrations/`), so no manual `CREATE TABLE` is needed — run the migrations against a database with `DATABASE_URL` set:
+
+-   cd Book-inventory/Book-backend
+-   npm run migrate          # apply pending migrations
+-   npm run migrate:status   # show applied/pending
+-   npm run migrate:undo     # roll back the last migration
+
+> Adopting migrations on a pre-existing `Inventory` table: the initial `create-inventory` migration is baselined (inserted into `SequelizeMeta`) so it is skipped, and only later migrations run.
+
+The initial schema is equivalent to:
 
 CREATE TABLE IF NOT EXISTS "Inventory" (  
 entry_id SERIAL PRIMARY KEY,  
@@ -53,9 +62,13 @@ CHECK (isbn ~ '^(97(8|9))?\d{9}(\d|X)$')
 
 ## Setting up the Front-end
 
+The front-end uses **Vite**. Set `VITE_API_URL` (backend base URL) in `Book-frontend/.env`.
+
 -   cd Book-inventory/Book-frontend
 -   npm i
--   npm start
+-   npm run dev      # Vite dev server on :3000
+-   npm run build    # production build to dist/
+-   npm test         # Vitest
 
 ## Setting up the Back-end
 

@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Spinner } from 'react-bootstrap';
-import api from '../services/api';
+import { Table, Spinner, Button, Modal } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { getBooks, deleteBook } from '../services/bookService';
+import { useAlert } from './Alert';
 import FilterBooksForm from './FilterBooksForm';
 import ExportButton from './ExportButton';
 
 function BooksList() {
+  const navigate = useNavigate();
+  const { showAlert } = useAlert();
   const [books, setBooks] = useState([]);
   const [filterData, setFilterData] = useState({
     title: '',
@@ -14,6 +18,7 @@ function BooksList() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [bookToDelete, setBookToDelete] = useState(null);
 
   const fetchBooks = async (isReset = false) => {
     setLoading(true);
@@ -29,7 +34,7 @@ function BooksList() {
           params.publication_date = filterData.publication_date;
       }
 
-      const response = await api.get('/api/books', { params });
+      const response = await getBooks(params);
       setBooks(response.data.books || []);
     } catch (err) {
       setError('Failed to fetch books. Please try again later.');
@@ -45,6 +50,19 @@ function BooksList() {
 
   const handleFilter = (isReset = false) => {
     fetchBooks(isReset);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      await deleteBook(bookToDelete.entry_id);
+      showAlert('Book deleted successfully!', 'success');
+      setBookToDelete(null);
+      fetchBooks();
+    } catch (err) {
+      console.error(err);
+      showAlert('Failed to delete the book.', 'danger');
+      setBookToDelete(null);
+    }
   };
 
   return (
@@ -74,6 +92,7 @@ function BooksList() {
               <th>Genre</th>
               <th>Publication Date</th>
               <th>ISBN</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -83,8 +102,25 @@ function BooksList() {
                 <td>{book.title}</td>
                 <td>{book.author}</td>
                 <td>{book.genre}</td>
-                <td>{new Date(book.publication_date).toLocaleDateString()}</td>
+                <td>{new Date(`${book.publication_date}T00:00:00`).toLocaleDateString()}</td>
                 <td>{book.isbn}</td>
+                <td>
+                  <Button
+                    variant="outline-primary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => navigate(`/edit/${book.entry_id}`)}
+                  >
+                    Edit
+                  </Button>
+                  <Button
+                    variant="outline-danger"
+                    size="sm"
+                    onClick={() => setBookToDelete(book)}
+                  >
+                    Delete
+                  </Button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -92,6 +128,24 @@ function BooksList() {
       ) : (
         <p>No books found.</p>
       )}
+
+      <Modal show={Boolean(bookToDelete)} onHide={() => setBookToDelete(null)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm Delete</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete{' '}
+          <strong>{bookToDelete?.title}</strong>?
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setBookToDelete(null)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 }
