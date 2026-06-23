@@ -1,69 +1,88 @@
-import React, { useState, useEffect } from 'react';
-import { Table, Spinner, Button, Modal } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Table, Spinner, Button, Modal, Pagination } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from '@tanstack/react-query';
 import { getBooks, deleteBook } from '../services/bookService';
 import { useAlert } from './Alert';
 import FilterBooksForm from './FilterBooksForm';
 import ExportButton from './ExportButton';
 
+const PAGE_SIZE = 20;
+
+// 빈 값 제거한 적용 필터만 추림
+const buildFilters = (formData) => {
+  const filters = {};
+  if (formData.title) filters.title = formData.title;
+  if (formData.author) filters.author = formData.author;
+  if (formData.genre) filters.genre = formData.genre;
+  if (formData.publication_date) filters.publication_date = formData.publication_date;
+  return filters;
+};
+
 function BooksList() {
   const navigate = useNavigate();
   const { showAlert } = useAlert();
-  const [books, setBooks] = useState([]);
+  const queryClient = useQueryClient();
+
   const [filterData, setFilterData] = useState({
     title: '',
     author: '',
     genre: '',
     publication_date: '',
   });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [appliedFilters, setAppliedFilters] = useState({});
+  const [page, setPage] = useState(1);
   const [bookToDelete, setBookToDelete] = useState(null);
 
-  const fetchBooks = async (isReset = false) => {
-    setLoading(true);
-    setError('');
-    try {
-      const params = {};
+  const { data, isPending, isError } = useQuery({
+    queryKey: ['books', page, appliedFilters],
+    queryFn: () =>
+      getBooks({ page, limit: PAGE_SIZE, ...appliedFilters }).then((res) => res.data),
+    placeholderData: keepPreviousData, // 페이지 전환 시 이전 데이터 유지(깜빡임 방지)
+  });
 
-      if (!isReset) {
-        if (filterData.title) params.title = filterData.title;
-        if (filterData.author) params.author = filterData.author;
-        if (filterData.genre) params.genre = filterData.genre;
-        if (filterData.publication_date)
-          params.publication_date = filterData.publication_date;
-      }
+  const books = data?.books || [];
+  const totalPages = data?.totalPages || 1;
 
-      const response = await getBooks(params);
-      setBooks(response.data.books || []);
-    } catch (err) {
-      setError('Failed to fetch books. Please try again later.');
-      console.error(err);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchBooks();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handleFilter = (isReset = false) => {
-    fetchBooks(isReset);
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await deleteBook(bookToDelete.entry_id);
+  const deleteMutation = useMutation({
+    mutationFn: (id) => deleteBook(id),
+    onSuccess: () => {
       showAlert('Book deleted successfully!', 'success');
-      setBookToDelete(null);
-      fetchBooks();
-    } catch (err) {
+      // 마지막 페이지의 마지막 항목을 지우면 이전 페이지로(아니면 현재 페이지 무효화)
+      if (books.length === 1 && page > 1) {
+        setPage((p) => p - 1);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ['books'] });
+      }
+    },
+    onError: (err) => {
       console.error(err);
       showAlert('Failed to delete the book.', 'danger');
-      setBookToDelete(null);
-    }
+    },
+    onSettled: () => setBookToDelete(null),
+  });
+
+  const handleFilter = (isReset = false) => {
+    setAppliedFilters(isReset ? {} : buildFilters(filterData));
+    setPage(1); // 필터 변경 시 1페이지부터
   };
+
+  const goToPage = (target) => {
+    if (target < 1 || target > totalPages || target === page) return;
+    setPage(target);
+  };
+
+  const confirmDelete = () => {
+    deleteMutation.mutate(bookToDelete.entry_id);
+  };
+
+  const loading = isPending;
+  const error = isError ? 'Failed to fetch books. Please try again later.' : '';
 
   return (
     <div>
@@ -127,6 +146,28 @@ function BooksList() {
         </Table>
       ) : (
         <p>No books found.</p>
+      )}
+
+      {!loading && !error && totalPages > 1 && (
+        <Pagination className="justify-content-center">
+          <Pagination.Prev
+            disabled={page === 1}
+            onClick={() => goToPage(page - 1)}
+          />
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <Pagination.Item
+              key={p}
+              active={p === page}
+              onClick={() => goToPage(p)}
+            >
+              {p}
+            </Pagination.Item>
+          ))}
+          <Pagination.Next
+            disabled={page === totalPages}
+            onClick={() => goToPage(page + 1)}
+          />
+        </Pagination>
       )}
 
       <Modal show={Boolean(bookToDelete)} onHide={() => setBookToDelete(null)}>

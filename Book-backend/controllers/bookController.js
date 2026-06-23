@@ -34,9 +34,13 @@ exports.createBook = asyncHandler(async (req, res) => {
     .json({ message: 'Book added successfully!', book: newBook });
 });
 
-// 2. 책 목록/필터
+// 2. 책 목록/필터 (페이지네이션: page, limit 기본 30)
 exports.getBooks = asyncHandler(async (req, res) => {
   const { title, author, genre, publication_date } = req.query;
+
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.max(1, parseInt(req.query.limit, 10) || 20);
+  const offset = (page - 1) * limit;
 
   const query = {};
   if (title) {
@@ -52,8 +56,19 @@ exports.getBooks = asyncHandler(async (req, res) => {
     query.publication_date = publication_date;
   }
 
-  const books = await Inventory.findAll({ where: query });
-  return res.json({ count: books.length, books });
+  const { count, rows } = await Inventory.findAndCountAll({
+    where: query,
+    limit,
+    offset,
+    order: [['entry_id', 'ASC']],
+  });
+
+  return res.json({
+    count, // 필터 조건에 맞는 전체 건수
+    page,
+    totalPages: Math.ceil(count / limit),
+    books: rows,
+  });
 });
 
 // 3. 데이터 내보내기 (CSV/JSON)

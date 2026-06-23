@@ -5,6 +5,7 @@ const request = require('supertest');
 jest.mock('../models/inventory', () => ({
   findOne: jest.fn(),
   findAll: jest.fn(),
+  findAndCountAll: jest.fn(),
   findByPk: jest.fn(),
   create: jest.fn(),
   destroy: jest.fn(),
@@ -63,14 +64,32 @@ describe('POST /api/books', () => {
 });
 
 describe('GET /api/books', () => {
-  it('count와 books를 반환', async () => {
-    Inventory.findAll.mockResolvedValue([{ entry_id: 1, ...validBook }]);
+  it('count/page/totalPages/books를 반환', async () => {
+    Inventory.findAndCountAll.mockResolvedValue({
+      count: 1,
+      rows: [{ entry_id: 1, ...validBook }],
+    });
 
     const res = await request(app).get('/api/books');
 
     expect(res.status).toBe(200);
     expect(res.body.count).toBe(1);
+    expect(res.body.page).toBe(1);
+    expect(res.body.totalPages).toBe(1);
     expect(res.body.books).toHaveLength(1);
+  });
+
+  it('page/limit로 페이지네이션 (offset 계산 + totalPages)', async () => {
+    Inventory.findAndCountAll.mockResolvedValue({ count: 45, rows: [] });
+
+    const res = await request(app).get('/api/books?page=2&limit=30');
+
+    expect(res.status).toBe(200);
+    expect(res.body.page).toBe(2);
+    expect(res.body.totalPages).toBe(2); // ceil(45/30)
+    expect(Inventory.findAndCountAll).toHaveBeenCalledWith(
+      expect.objectContaining({ limit: 30, offset: 30 })
+    );
   });
 });
 
